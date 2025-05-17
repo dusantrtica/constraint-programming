@@ -72,6 +72,8 @@ def maximum_covering(locations: dict, facilities: list, p: int) -> list:
     return [selected_loc.name for selected_loc in x if selected_loc.x == 1]
     
 
+
+
 def test_set_covering():
     locations = {
         0: ['a', 'b'],
