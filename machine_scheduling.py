@@ -23,8 +23,7 @@ def machine_scheduling(jobs: list):
 
     if status == OptimizationStatus.INFEASIBLE:
         return None
-    
-    print([job.name for job in x])
+        
     return [job.x for job in x]
 
 def test_machine_scheduling():
