@@ -11,6 +11,7 @@ We want to minimize the number of employees hired
 
 from mip import Model, minimize, xsum, INTEGER
 
+
 def schedule_personnel():
     demands = [110, 80, 150, 30, 70, 160, 120]
     total_employees_needed = sum(demands)
@@ -20,9 +21,10 @@ def schedule_personnel():
     x = [None for _ in range(len(demands))]
 
     # Add variables
-    for i in range(len(demands)):        
-        x[i] = model.add_var("day_{}".format(i), lb=0, ub=total_employees_needed, var_type=INTEGER)
-    
+    for i in range(len(demands)):
+        x[i] = model.add_var(
+            "day_{}".format(i), lb=0, ub=total_employees_needed, var_type=INTEGER
+        )
 
     # 110 employees are needed on Monday
     model.add_constr(x[0] + x[3] + x[4] + x[5] + x[6] >= 110)
@@ -44,15 +46,15 @@ def schedule_personnel():
 
     # 120 employees are needed on Sunday
     model.add_constr(x[2] + x[3] + x[4] + x[5] + x[6] >= 120)
-    
+
     model.objective = minimize(xsum(x))
 
-    model.optimize()    
+    model.optimize()
 
     return [shift.x for shift in x]
 
+
 def test_personnel_scheduling():
-    result = schedule_personnel()    
+    result = schedule_personnel()
     print(result)
     assert result == [4, 40, 12, 14, 0, 94, 0]
-    
