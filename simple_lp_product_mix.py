@@ -19,10 +19,11 @@ from pydantic import BaseModel, Field, StrictInt, StrictFloat
 
 from typing import List
 
+
 class Product(BaseModel):
     name: str
     wood_units_needed: int
-    labor_time: StrictInt= Field(ge=0, le=24)
+    labor_time: StrictInt = Field(ge=0, le=24)
     machine_time: StrictInt = Field(ge=0, le=3600)
     selling_price: StrictFloat = Field(ge=0)
 
@@ -32,6 +33,7 @@ class Capacity(BaseModel):
     num_machines: int
     single_machine_runtime: int
     supply_of_woods: int
+
 
 def product_mix():
     model = Model()
@@ -49,6 +51,7 @@ def product_mix():
 
     return {"tables": tables.x, "desks": desks.x}
 
+
 def parametrized_product_mix(products_specs: List[Product], capacity: Capacity):
     model = Model()
 
@@ -56,12 +59,40 @@ def parametrized_product_mix(products_specs: List[Product], capacity: Capacity):
 
     for product_spec in products_specs:
         products.append(model.add_var(product_spec.name, var_type=INTEGER, lb=0))
-    
-    model.add_constr(xsum([products[i]*p_spec.labor_time for i, p_spec in enumerate(products_specs)]) <= capacity.workers * 200*8)
-    model.add_constr(xsum([products[i]*p_spec.machine_time for i, p_spec in enumerate(products_specs)]) <= capacity.num_machines*capacity.single_machine_runtime*60)
-    model.add_constr(xsum([products[i]*p_spec.wood_units_needed for i, p_spec in enumerate(products_specs)]) <= capacity.supply_of_woods)
 
-    model.objective = maximize(xsum([products[i]*p_spec.selling_price for i, p_spec in enumerate(products_specs)]))
+    model.add_constr(
+        xsum(
+            [products[i] * p_spec.labor_time for i, p_spec in enumerate(products_specs)]
+        )
+        <= capacity.workers * 200 * 8
+    )
+    model.add_constr(
+        xsum(
+            [
+                products[i] * p_spec.machine_time
+                for i, p_spec in enumerate(products_specs)
+            ]
+        )
+        <= capacity.num_machines * capacity.single_machine_runtime * 60
+    )
+    model.add_constr(
+        xsum(
+            [
+                products[i] * p_spec.wood_units_needed
+                for i, p_spec in enumerate(products_specs)
+            ]
+        )
+        <= capacity.supply_of_woods
+    )
+
+    model.objective = maximize(
+        xsum(
+            [
+                products[i] * p_spec.selling_price
+                for i, p_spec in enumerate(products_specs)
+            ]
+        )
+    )
 
     model.optimize()
 
@@ -69,17 +100,32 @@ def parametrized_product_mix(products_specs: List[Product], capacity: Capacity):
 
 
 def test_product_mix():
-    
+
     products = product_mix()
     assert products["tables"] == 190
     assert products["desks"] == 883
 
+
 def test_parametrized_product_mix():
-    desk = Product(name="desk", wood_units_needed=3, labor_time=1, machine_time=50, selling_price=700)
-    table = Product(name="table", wood_units_needed=5, labor_time=2, machine_time=20, selling_price=900)
+    desk = Product(
+        name="desk",
+        wood_units_needed=3,
+        labor_time=1,
+        machine_time=50,
+        selling_price=700,
+    )
+    table = Product(
+        name="table",
+        wood_units_needed=5,
+        labor_time=2,
+        machine_time=20,
+        selling_price=900,
+    )
 
-    daily_capacity = Capacity(workers=200, num_machines=50, single_machine_runtime=16, supply_of_woods=3600)
+    daily_capacity = Capacity(
+        workers=200, num_machines=50, single_machine_runtime=16, supply_of_woods=3600
+    )
 
-    products = parametrized_product_mix([desk, table], daily_capacity)    
+    products = parametrized_product_mix([desk, table], daily_capacity)
     assert products["table"] == 190
     assert products["desk"] == 883
