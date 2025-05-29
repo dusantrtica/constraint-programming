@@ -1,0 +1,21 @@
+load("@rules_python//python:defs.bzl", "py_test")
+
+py_library(
+    name = "simple_lp_product_mix",
+    srcs = ["simple_lp_product_mix.py"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "@pip//mip",
+        "@pip//pydantic"
+    ]
+)
+
+py_test(
+    name = "test_simple_lp_product_mix",
+    srcs = ["test_simple_lp_product_mix.py"],
+    deps = [
+        ":simple_lp_product_mix",
+        "@pip//pytest",
+        "@pip//pydantic",        
+    ]
+)

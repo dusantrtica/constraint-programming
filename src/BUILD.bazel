@@ -1,0 +1,13 @@
+load("@rules_python//python:defs.bzl", "py_binary")
+load("@pip//:requirements.bzl", "requirement")
+
+py_binary(
+    name = "main",
+    srcs = ["main.py"],
+    deps = [        
+        "//src/algorithms:simple_lp_product_mix",
+        "//src/routers",
+        requirement("fastapi"),
+        requirement("uvicorn"),
+    ],
+)
