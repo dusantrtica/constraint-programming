@@ -1,4 +1,4 @@
-load("@rules_python//python:defs.bzl", "py_library")
+load("@rules_python//python:defs.bzl", "py_library", "py_test")
 
 py_library(
     name = "routers",
@@ -7,4 +7,18 @@ py_library(
         "//src/algorithms:simple_lp_product_mix"
     ],
     visibility = ["//visibility:public"],
+)
+
+
+py_test(
+    name = "test_product_mix",
+    srcs = ["test_product_mix.py"],
+    deps = [
+        ":routers",
+        "//src:main",
+        "@pip//pytest",
+        "@pip//pydantic",
+        "@pip//fastapi",
+        "@pip//httpx",
+    ]
 )
