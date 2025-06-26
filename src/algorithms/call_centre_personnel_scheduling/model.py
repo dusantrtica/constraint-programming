@@ -9,6 +9,7 @@ class Settings(BaseModel):
     bucket_size: StrictInt
     min_shift_duration: StrictInt
     max_shift_duration: StrictInt
+    demands_single_day: list[int]
 
 class Shift(BaseModel):
     start: StrictInt

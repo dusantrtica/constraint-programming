@@ -2,7 +2,7 @@ load("@rules_python//python:defs.bzl", "py_test")
 
 py_library(
     name = "call_centre_personnel_scheduling",
-    srcs = ["model.py"],
+    srcs = ["model.py", "algorithm.py"],
     visibility = ["//visibility:public"],
     deps = [
         "@pip//mip",
@@ -17,5 +17,15 @@ py_test(
         ":call_centre_personnel_scheduling",
         "@pip//pytest",
         "@pip//pydantic",        
+    ]
+)
+
+py_test(
+    name = "test_algorithm",
+    srcs = ["test_algorithm.py"],
+    deps = [
+        ":call_centre_personnel_scheduling",
+        "@pip//pytest",
+        "@pip//pydantic"
     ]
 )

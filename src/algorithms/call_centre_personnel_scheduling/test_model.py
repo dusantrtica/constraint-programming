@@ -11,6 +11,7 @@ def test_settings_from_dict():
         "bucket_size": 60,
         "min_shift_duration": 8*60,
         "max_shift_duration": 8*60,
+        "demands_single_day": [0, 0, 0]
     }
     settings = Settings(**settings_dict)
 
@@ -29,6 +30,7 @@ def test_generate_shifts():
         "bucket_size": 60,
         "min_shift_duration": 9*60,
         "max_shift_duration": 9*60,
+        "demands_single_day": [1]
     }
 
     shifts = generate_shifts(Settings(**settings_dict))
