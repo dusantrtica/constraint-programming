@@ -1,0 +1,49 @@
+from src.class_scheduling.sample.model import SchedulingInput, Settings, Course
+from ortools.sat.python import cp_model
+from typing import List, Tuple
+
+
+def to_tuple_index (day: str, hour: int, course: Course, classroom: Classroom) -> Tuple:
+    return (day, hour, course.id, classroom.id,)
+
+class SimpleCPSolver:
+    def __init__(self, scheduling_input: SchedulingInput):
+        self.scheduling_input = scheduling_input
+        self.model = cp_model.CpModel()
+        self.solver = cp_model.CpSolver()
+        self.create_assignment_variables(scheduling_input)
+        self.create_constraints()
+
+
+    def init_input(self, scheduling_input: SchedulingInput):
+        self.settings: Settings = scheduling_input.settings
+        self.classrooms = scheduling_input.classrooms
+        self.courses: List[Course] = scheduling_input.courses
+        self.departments = scheduling_input.departments
+        self.working_hours = [hour for hour in range(self.settings.start_hour, self.settings.end_hour)]
+
+
+    def create_assignment_variables(self):
+        self.assignments = {}
+
+
+        for day in self.settings.working_days:
+            for hour in self.working_hours:
+                for course in self.courses:
+                    for classroom in self.classrooms:                        
+                        self.assignments[to_tuple_index(day, hour, course, classroom)] = self.model.NewBoolVar(
+                            f'assignment_{day}_{hour}_{course.id}_{classroom.id}'
+                        )
+    
+
+    def create_constraints(self):
+        # constraint 1: za svaki time slot, u danu, najvise jedan kurs se moze odrzati
+        for day in self.settings.working_days:
+            for hour in self.working_hours:
+                self.model.Add(sum(self.assignments[to_tuple_index(day, hour, course, classroom)] for course in self.courses for classroom in self.classrooms) == 1)
+
+
+    def solve(self):
+        status = self.solver.solve(self.model)
+
+        return status

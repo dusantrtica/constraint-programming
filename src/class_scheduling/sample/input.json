@@ -1,4 +1,10 @@
 {
+    "settings": {
+        "workingDays": ["Ponedeljak", "Utorak", "Sreda", "Četvrtak", "Petak"],
+        "startHour": 8,
+        "endHour": 20,
+        "duration": 1
+    },
     "locations": [
         {"id": 1, "name": "Studentski trg"},
         {"id": 2, "name": "N Building"},
@@ -15,8 +21,7 @@
         {"id": 8, "name": "718", "locId": 1, "hasComputers": 1, "capacity": 30},
         {"id": 9, "name": "JAG1", "locId": 3, "hasComputers": 1, "capacity": 20},
         {"id": 10, "name": "JAG2", "locId": 3, "hasComputers": 1, "capacity": 30},
-        {"id": 11, "name": "JAG3", "locId": 3, "hasComputers": 1, "capacity": 15},
-        {"id": 12, "name": "Amfiteatar", "locId": 1, "hasComputers": 0, "capacity": 150}
+        {"id": 11, "name": "JAG3", "locId": 3, "hasComputers": 1, "capacity": 15}
     ],
     "departments": [
         {"id": 1, "name": "Profesor Matematike i racunarstva"},
