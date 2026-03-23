@@ -1,8 +1,10 @@
 import json
 from pathlib import Path
-from src.class_scheduling.sample.model import SchedulingInput, Settings
+from pydantic import TypeAdapter
+from src.class_scheduling.sample.model import SchedulingInput
 
-def load_input(path: str) -> SchedulinInput:
+def load_input(path: str) -> SchedulingInput:
     raw = Path(path).read_text(encoding='utf-8')
-    return SchedulingInput.model_validate(json.load(raw))
+    adapter = TypeAdapter(SchedulingInput)
+    return adapter.validate_python(json.loads(raw))
 

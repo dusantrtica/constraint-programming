@@ -1,0 +1,11 @@
+load("@rules_python//python:defs.bzl", "py_test")
+
+py_test(
+    name = "test_data",
+    srcs = ["model.py", "data.py", "test_data.py"],
+    data = ["input.json"],
+    deps = [        
+        "@pip//pytest",
+        "@pip//pydantic",        
+    ],
+)
