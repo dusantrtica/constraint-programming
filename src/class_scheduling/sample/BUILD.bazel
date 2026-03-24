@@ -9,3 +9,13 @@ py_test(
         "@pip//pydantic",        
     ],
 )
+
+py_test(
+    name = "test_cp_solver",
+    srcs=["model.py", "data.py", "cp_solver.py", "test_cp_solver.py"],
+    deps=[
+        "@pip//pytest",
+        "@pip//pydantic",
+        "@pip//ortools",
+    ]
+)

@@ -1,0 +1,8 @@
+black
+fastapi
+httpx
+mip
+ortools
+pydantic
+pytest
+uvicorn

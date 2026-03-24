@@ -1,4 +1,4 @@
-from src.class_scheduling.sample.model import SchedulingInput, Settings, Course
+from src.class_scheduling.sample.model import SchedulingInput, Settings, Course, Classroom
 from ortools.sat.python import cp_model
 from typing import List, Tuple
 
