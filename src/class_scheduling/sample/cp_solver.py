@@ -7,11 +7,11 @@ def to_tuple_index (day: str, hour: int, course: Course, classroom: Classroom) -
     return (day, hour, course.id, classroom.id,)
 
 class SimpleCPSolver:
-    def __init__(self, scheduling_input: SchedulingInput):
-        self.scheduling_input = scheduling_input
+    def __init__(self, scheduling_input: SchedulingInput):        
         self.model = cp_model.CpModel()
         self.solver = cp_model.CpSolver()
-        self.create_assignment_variables(scheduling_input)
+        self.init_input(scheduling_input)
+        self.create_assignment_variables()
         self.create_constraints()
 
 
@@ -20,6 +20,7 @@ class SimpleCPSolver:
         self.classrooms = scheduling_input.classrooms
         self.courses: List[Course] = scheduling_input.courses
         self.departments = scheduling_input.departments
+        self.students_enrolled = scheduling_input.students_enrolled
         self.working_hours = [hour for hour in range(self.settings.start_hour, self.settings.end_hour)]
 
 
