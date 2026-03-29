@@ -1,3 +1,4 @@
+import string
 from pydantic import ConfigDict, Field
 from pydantic.dataclasses import dataclass
 from typing import List
@@ -28,6 +29,9 @@ class Department:
 
 @dataclass(config=_config)
 class Quota:
+    def __init__(self, theory: int, practice:int):
+        self.theory = theory
+        self.practice = practice
     theory: int
     practice: int
 
@@ -65,3 +69,5 @@ class SchedulingInput:
     departments: List[Department]
     courses: List[Course]
     students_enrolled: List[StudentsEnrolled] = Field(alias="studentsEnrolled")
+
+

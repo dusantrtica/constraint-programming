@@ -1,4 +1,5 @@
-from typing_extensions import deprecated
+from ortools.sat.python import cp_model
+from ortools.sat.python import cp_model
 from src.class_scheduling.sample.cp_solver import SimpleCPSolver
 
 import pytest
@@ -58,6 +59,16 @@ def test_cp_solver_init_data(scheduling_input):
     assert solver.students_enrolled == scheduling_input.students_enrolled
     assert solver.working_hours == [8, 9, 10, 11, 12, 13]
 
+
+def test_cp_solver_basic_constraint(scheduling_input):
+    solver = SimpleCPSolver(scheduling_input)
+    status = solver.solve()
+
+    assert status == cp_model.OPTIMAL
+    variables = solver.get_solution_variables()
+
+    for variable in variables:
+        print(variable)
 
 if __name__ == "__main__":
     sys.exit(pytest.main(["-v", __file__]))
