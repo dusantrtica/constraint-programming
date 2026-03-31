@@ -1,4 +1,5 @@
 import os
+import pdb
 import sys
 import pytest
 from src.class_scheduling.sample.data import (
@@ -46,9 +47,10 @@ def test_split_students_into_groups():
         Group(f"1_1_0", 1, 30, 1),
         Group(f"1_1_1", 1, 30, 1),
         Group(f"1_1_2", 1, 30, 1),
-        Group(f"2_1_0", 1, 33, 1),
-        Group(f"2_1_1", 1, 33, 1),
-        Group(f"2_1_2", 1, 33, 1),
+        Group(f"2_1_0", 1, 25, 1),
+        Group(f"2_1_1", 1, 25, 1),
+        Group(f"2_1_2", 1, 25, 1),
+        Group(f"2_1_3", 1, 25, 1),
     ]
 
 
@@ -200,19 +202,19 @@ def test_generate_sessions():
 
     # Arrange
     departments = [
-        Department(id=1, name="Informatika"),
-        Department(id=2, name="Teorijska Matematika"),
+        Department(id=10, name="Informatika"),
+        Department(id=20, name="Teorijska Matematika"),
     ]
     students_enrolled = [
-        StudentsEnrolled(dep_id=1, count=90, semester=1),
-        StudentsEnrolled(dep_id=2, count=100, semester=1),
+        StudentsEnrolled(dep_id=10, count=90, semester=1),
+        StudentsEnrolled(dep_id=20, count=100, semester=1),
     ]
     courses = [
         Course(
             id=101,
             name="Uvod u Programiranje",
             semester=1,
-            dep_id=1,
+            dep_id=10,
             quota=Quota(theory=1, practice=2),
             need_computers=True,
         ),
@@ -220,7 +222,7 @@ def test_generate_sessions():
             id=103,
             name="Analiza 1",
             semester=1,
-            dep_id=2,
+            dep_id=20,
             quota=Quota(theory=2, practice=3),
             need_computers=False,
         ),
@@ -236,9 +238,31 @@ def test_generate_sessions():
 
     # Act
     result = list(generate_sessions(scheduling_input, group_size=50))
+    assert result[0].id == "10_1_0_10_101_t"
+    assert result[1].id == "10_1_0_10_101_p"
+    assert result[2].id == "10_1_0_10_101_p"
 
-    print(result)
-    assert len(result) == 16
+
+    assert result[3].id == "10_1_1_10_101_t"
+    assert result[4].id == "10_1_1_10_101_p"
+    assert result[5].id == "10_1_1_10_101_p"
+
+    assert result[6].id == "20_1_0_20_103_t"
+    assert result[7].id == "20_1_0_20_103_t"
+    assert result[8].id == "20_1_0_20_103_p"
+    assert result[9].id == "20_1_0_20_103_p"
+    assert result[10].id == "20_1_0_20_103_p"
+
+    assert result[11].id == "20_1_1_20_103_t"
+    assert result[12].id == "20_1_1_20_103_t"
+    assert result[13].id == "20_1_1_20_103_p"
+    assert result[14].id == "20_1_1_20_103_p"
+    assert result[15].id == "20_1_1_20_103_p"
+    
+
+
+
+    
 
 if __name__ == "__main__":
     sys.exit(pytest.main(["-v", __file__]))

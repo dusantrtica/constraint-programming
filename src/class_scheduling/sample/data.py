@@ -1,3 +1,4 @@
+import math
 import json
 from pathlib import Path
 from tokenize import group
@@ -28,7 +29,7 @@ class Group:
         return self.id == value.id and self.count == value.count
 
     def __repr__(self) -> str:
-        return self.id
+        return f"{self.id}_{self.count}"
 
 
 def split_students_into_groups(
@@ -36,7 +37,7 @@ def split_students_into_groups(
 ) -> List[Group]:
     groups: List[Group] = []
     for enrollment in students_enrollment:
-        number_of_groups = enrollment.count // group_size
+        number_of_groups = math.ceil(enrollment.count / group_size)
         for group_index in range(number_of_groups):
             group_id = f"{enrollment.dep_id}_{enrollment.semester}_{group_index}"
             group = Group(

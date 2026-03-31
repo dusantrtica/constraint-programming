@@ -67,8 +67,5 @@ def test_cp_solver_basic_constraint(scheduling_input):
     assert status == cp_model.OPTIMAL
     variables = solver.get_solution_variables()
 
-    for variable in variables:
-        print(variable)
-
 if __name__ == "__main__":
     sys.exit(pytest.main(["-v", __file__]))
