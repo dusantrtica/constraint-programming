@@ -9,6 +9,7 @@ from src.class_scheduling.sample.model import (
     Course,
     Department,
     StudentsEnrolled,
+    Classroom
 )
 
 GROUP_SIZE = 30  # 30 ucenika po grupi
@@ -115,7 +116,13 @@ def generate_sessions(scheduling_input: SchedulingInput, group_size: int) -> Ite
 
     return sessions
 
-
+def get_eligible_rooms(session: Session, classrooms: list[Classroom]) -> list[int]:
+    eligible: list[int] = []
+    for room in classrooms:    
+        if session.needs_computers and not room.has_computers:
+            continue
+        eligible.append(room.id)
+    return eligible
 
 def load_input(path: str) -> SchedulingInput:
     raw = Path(path).read_text(encoding="utf-8")

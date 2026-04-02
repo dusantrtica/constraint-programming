@@ -1,25 +1,21 @@
 from ortools.sat.python import cp_model
-from ortools.sat.python import cp_model
 from src.class_scheduling.sample.cp_solver import SimpleCPSolver
+from src.class_scheduling.sample.data import Session
 
 import pytest
-import os
 import sys
 from src.class_scheduling.sample.model import (
     Classroom,
     SchedulingInput,
     Settings,
     Course,
-    Quota
+    Quota,
 )
 
 
 @pytest.fixture
 def scheduling_input():
-    # Return a minimal, valid SchedulingInput object.
-    # You may need to adjust this when you add required fields to SchedulingInput.
     return SchedulingInput(
-        # Fill in minimal required dummy/test data for your SchedulingInput model below.
         settings=Settings(
             **{
                 "working_days": ["Ponedeljak", "Utorak", "Sreda"],
@@ -42,30 +38,65 @@ def scheduling_input():
                     "quota": Quota(**{"theory": 4, "practice": 4}),
                     "needsComputers": 0,
                 }
-            ),                    
+            ),
         ],
         locations=[],
-        departments=[],    
-        students_enrolled=[]
+        departments=[],
+        students_enrolled=[],
     )
 
 
+@pytest.fixture
+def sessions(scheduling_input):
+    """Build 8 sessions (4 theory + 4 practice) for a single student group."""
+    course = scheduling_input.courses[0]
+    result = []
+    for i in range(course.quota.theory):
+        result.append(
+            Session(f"t_{i}", "grp_1", course.dep_id, course.id,
+                    course.needs_computers, "theory")
+        )
+    for i in range(course.quota.practice):
+        result.append(
+            Session(f"p_{i}", "grp_1", course.dep_id, course.id,
+                    course.needs_computers, "practice")
+        )
+    return result
+
+
 def test_cp_solver_init_data(scheduling_input):
-    solver = SimpleCPSolver(scheduling_input)
+    solver = SimpleCPSolver(scheduling_input, log_progress=False)
     assert solver.settings == scheduling_input.settings
     assert solver.classrooms == scheduling_input.classrooms
-    assert solver.courses == scheduling_input.courses    
+    assert solver.courses == scheduling_input.courses
     assert solver.departments == scheduling_input.departments
     assert solver.students_enrolled == scheduling_input.students_enrolled
     assert solver.working_hours == [8, 9, 10, 11, 12, 13]
 
 
-def test_cp_solver_basic_constraint(scheduling_input):
-    solver = SimpleCPSolver(scheduling_input)
+def test_cp_solver_basic_constraint(scheduling_input, sessions):
+    solver = SimpleCPSolver(scheduling_input, sessions=sessions, log_progress=False)
     status = solver.solve()
 
     assert status == cp_model.OPTIMAL
     variables = solver.get_solution_variables()
+
+    assert len(variables) == 8
+
+    # Verify no two sessions share the same room at the same time
+    room_times = set()
+    for v in variables:
+        key = (v["day"], v["hour"], v["room"])
+        assert key not in room_times, f"Room-time collision: {key}"
+        room_times.add(key)
+
+    # Verify no two sessions for the same group share the same time slot
+    group_times = set()
+    for v, session in zip(variables, sessions):
+        key = (session.group_id, v["day"], v["hour"])
+        assert key not in group_times, f"Group-time collision: {key}"
+        group_times.add(key)
+
 
 if __name__ == "__main__":
     sys.exit(pytest.main(["-v", __file__]))

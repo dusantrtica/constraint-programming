@@ -1,0 +1,5 @@
+To be added later as when the basic scheduling and comparation is done.
+
+1. Minimize over room capacity
+2. Use resource wisely (computers only for computer classes)
+3. Minizime gaps between groups
