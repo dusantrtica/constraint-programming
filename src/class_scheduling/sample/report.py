@@ -1,18 +1,112 @@
+from collections import defaultdict
+from functional import seq
+from openpyxl import Workbook
+from openpyxl.styles import Alignment, Font, Border, Side, PatternFill
 from src.class_scheduling.sample.cp_solver import SimpleCPSolver
-from src.class_scheduling.sample.data import load_input
+from src.class_scheduling.sample.data import (
+    Session, Group, print_group, split_students_into_groups, print_session, GROUP_SIZE,
+)
+from src.class_scheduling.sample.model import SchedulingInput
 
 
-def print_report(solver: SimpleCPSolver):
-    print("hello")
+def export_schedule_to_excel(solver: SimpleCPSolver,
+                             scheduling_input: SchedulingInput,
+                             output_path: str):
+    """
+    Export the solved schedule to an Excel file with one sheet per group.
 
-def run_cp_solver():
-    scheduling_input = load_input("input.json")
-    simple_cp_solver = SimpleCPSolver(scheduling_input)
-    result = simple_cp_solver.solve()
+    Each sheet is a timetable grid:
+      - Rows    = working days  (Ponedeljak, Utorak, ...)
+      - Columns = hour slots    (8, 9, 10, ...)
+      - Cells   = session info  (course name, type, room)
+    """
+    variables = solver.get_solution_variables()
+    sessions = solver.sessions
+    day_names = scheduling_input.settings.working_days
+    hours = solver.working_hours
+    classrooms = scheduling_input.classrooms
+    groups = split_students_into_groups(
+        scheduling_input.students_enrolled, GROUP_SIZE
+    )
 
-    print(result)
+    # Build a lookup: group_id -> list of (session, assignment)
+    group_entries = defaultdict(list)
+    for session, var in zip(sessions, variables):
+        group_entries[session.group_id].append((session, var))
 
+    wb = Workbook()
+    wb.remove(wb.active)
 
-if __name__ == '__main__':
-    run_cp_solver()
+    header_font = Font(bold=True, size=11)
+    header_fill = PatternFill(start_color="D9E1F2", end_color="D9E1F2",
+                              fill_type="solid")
+    cell_align = Alignment(wrap_text=True, vertical="top")
+    thin_border = Border(
+        left=Side(style="thin"),
+        right=Side(style="thin"),
+        top=Side(style="thin"),
+        bottom=Side(style="thin"),
+    )
 
+    for group_id in sorted(group_entries.keys()):
+        entries = group_entries[group_id]
+
+        sheet_name = print_group(seq(groups).find(lambda grp: grp.id == group_id), scheduling_input.departments)
+        print("SHeet Name = ", sheet_name)
+        ws = wb.create_sheet(title=sheet_name)
+
+        # Header row: hour slots
+        ws.cell(row=1, column=1, value="Day / Hour").font = header_font
+        ws.cell(row=1, column=1).fill = header_fill
+        ws.cell(row=1, column=1).border = thin_border
+        for col_idx, hour in enumerate(hours):
+            cell = ws.cell(row=1, column=col_idx + 2, value=f"{hour}:00")
+            cell.font = header_font
+            cell.fill = header_fill
+            cell.border = thin_border
+            cell.alignment = Alignment(horizontal="center")
+
+        # Day name column + cells
+        for row_idx, day_name in enumerate(day_names):
+            cell = ws.cell(row=row_idx + 2, column=1, value=day_name)
+            cell.font = header_font
+            cell.fill = header_fill
+            cell.border = thin_border
+
+            for col_idx in range(len(hours)):
+                ws.cell(row=row_idx + 2, column=col_idx + 2).border = thin_border
+
+        # Fill in sessions
+        # Build a grid: (day_index, hour_index) -> list of cell texts
+        grid = defaultdict(list)
+        for session, var in entries:
+            room = classrooms[var["room"]]
+            label = print_session(
+                session, groups,
+                scheduling_input.courses,
+                scheduling_input.departments,
+                room_name=room.name,
+            )
+            grid[(var["day"], var["hour"])].append(label)
+
+        for (day_idx, hour_idx), labels in grid.items():
+            cell = ws.cell(
+                row=day_idx + 2,
+                column=hour_idx + 2,
+                value="\n---\n".join(labels),
+            )
+            cell.alignment = cell_align
+            cell.border = thin_border
+
+        # Auto-size columns
+        ws.column_dimensions["A"].width = 16
+        for col_idx in range(len(hours)):
+            col_letter = chr(ord("B") + col_idx)
+            ws.column_dimensions[col_letter].width = 28
+
+        # Set row heights to accommodate wrapped text
+        for row_idx in range(2, 2 + len(day_names)):
+            ws.row_dimensions[row_idx].height = 60
+
+    wb.save(output_path)
+    return output_path

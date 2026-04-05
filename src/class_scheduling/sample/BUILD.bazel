@@ -6,7 +6,8 @@ py_test(
     data = ["input.json"],
     deps = [        
         "@pip//pytest",
-        "@pip//pydantic",        
+        "@pip//pydantic",
+        "@pip//pyfunctional",
     ],
 )
 
@@ -17,7 +18,8 @@ py_test(
         "@pip//pytest",
         "@pip//pydantic",
         "@pip//ortools",
-    ]
+        "@pip//pyfunctional",
+    ],
 )
 
 py_binary(
@@ -26,13 +28,15 @@ py_binary(
         "model.py",
         "data.py",
         "cp_solver.py",
+        "report.py",
         "runner.py",
     ],
     data = ["input.json"],
     deps = [
         "@pip//pydantic",
         "@pip//ortools",
+        "@pip//openpyxl",
+        "@pip//pyfunctional",
     ],
     main = "runner.py",
 )
-

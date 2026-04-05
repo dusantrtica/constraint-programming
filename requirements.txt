@@ -106,6 +106,14 @@ click==8.2.0 \
     # via
     #   black
     #   uvicorn
+dill==0.4.1 \
+    --hash=sha256:1e1ce33e978ae97fcfcff5638477032b801c46c7c65cf717f95fbc2248f79a9d \
+    --hash=sha256:423092df4182177d4d8ba8290c8a5b640c66ab35ec7da59ccfa00f6fa3eea5fa
+    # via pyfunctional
+et-xmlfile==2.0.0 \
+    --hash=sha256:7a91720bc756843502c3b7504c77b8fe44217c85c537d85037f0f536151b2caa \
+    --hash=sha256:dab3f4764309081ce75662649be815c4c9081e88f0837825f90fd28317d4da54
+    # via openpyxl
 fastapi==0.115.12 \
     --hash=sha256:1e2c2a2646905f9e83d32f04a3f86aff4a286669c6c950ca95b5fd68c2602681 \
     --hash=sha256:e94613d6c05e27be7ffebdd6ea5f388112e5e430c8f7d6494a9d1d88d43e814d
@@ -222,6 +230,10 @@ numpy==2.4.3 \
     # via
     #   ortools
     #   pandas
+openpyxl==3.1.5 \
+    --hash=sha256:5282c12b107bffeef825f4617dc029afaf41d0ea60823bbb665ef3079dc79de2 \
+    --hash=sha256:cf0e3cf56142039133628b5acffe8ef0c12bc902d2aadd3e0fe5878dc08d1050
+    # via -r requirements.in
 ortools==9.12.4544 \
     --hash=sha256:03fcfaac3574f6b11f3062a211da05f10bb5cc6668cd1bbcd26194ff1e802332 \
     --hash=sha256:081f509caae45d0726cadaa579dd576d2798196c2f019fd09559946317480a0e \
@@ -454,6 +466,10 @@ pydantic-core==2.33.2 \
     --hash=sha256:fa854f5cf7e33842a892e5c73f45327760bc7bc516339fda888c75ae60edaeb6 \
     --hash=sha256:fe5b32187cbc0c862ee201ad66c30cf218e5ed468ec8dc1cf49dec66e160cc4d
     # via pydantic
+pyfunctional==1.5.0 \
+    --hash=sha256:dfee0f4110f4167801bb12f8d497230793392f694655103b794460daefbebf2b \
+    --hash=sha256:e184f3d7167e5822b227c95292c3557cf59edf258b1f06a08c8e82991de98769
+    # via -r requirements.in
 pytest==8.3.5 \
     --hash=sha256:c69214aa47deac29fad6c2a4f590b9c4a9fdb16a403176fe154b79c0b4d4d820 \
     --hash=sha256:f4efe70cc14e511565ac476b57c279e12a855b11f48f212af1080ef2263d3845
@@ -474,6 +490,10 @@ starlette==0.46.2 \
     --hash=sha256:595633ce89f8ffa71a015caed34a5b2dc1c0cdb3f0f1fbd1e69339cf2abeec35 \
     --hash=sha256:7f7361f34eed179294600af672f565727419830b54b7b084efe44bb82d2fccd5
     # via fastapi
+tabulate==0.10.0 \
+    --hash=sha256:e2cfde8f79420f6deeffdeda9aaec3b6bc5abce947655d17ac662b126e48a60d \
+    --hash=sha256:f0b0622e567335c8fabaaa659f1b33bcb6ddfe2e496071b743aa113f8774f2d3
+    # via pyfunctional
 typing-extensions==4.13.2 \
     --hash=sha256:a439e7c04b49fec3e5d3e2beaa21755cadbbdc391694e28ccdd36ca4a1408f8c \
     --hash=sha256:e6c81219bd689f51865d9e372991c540bda33a0379d5573cddb9a3a23f7caaef

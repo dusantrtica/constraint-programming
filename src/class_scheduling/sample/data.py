@@ -1,5 +1,6 @@
 import math
 import json
+from functional import seq
 from pathlib import Path
 from tokenize import group
 from pydantic import TypeAdapter
@@ -15,8 +16,8 @@ from src.class_scheduling.sample.model import (
 GROUP_SIZE = 30  # 30 ucenika po grupi
 
 
-def courses_for_department(courses: List[Course], department_id) -> Iterable[Course]:
-    return filter(lambda course: course.depId == department_id)
+def courses_for_department(courses: List[Course], department_id) -> List[Course]:
+    return seq(courses).filter(lambda course: course.dep_id == department_id).to_list()    
 
 
 class Group:
@@ -31,6 +32,14 @@ class Group:
 
     def __repr__(self) -> str:
         return f"{self.id}_{self.count}"
+
+    def group_label(self):
+        grp_index = int(self.id.split("_")[-1])
+        return "ABCDE"[grp_index]
+
+def print_group(group: Group, departments: List[Department]) -> str:
+    department_name = department_by_id(departments, group.department_id).name
+    return f"{department_name}, grupa {group.group_label()}"
 
 
 def split_students_into_groups(
@@ -70,16 +79,19 @@ class Session:
         self.session_type = session_type
 
 
+def print_session(session: Session, groups: List[Group], courses: List[Course],
+                   departments: List[Department], room_name: str = "") -> str:
+    course_name = seq(courses).find(lambda c: c.id == session.course_id).name
+    session_type = "T" if session.session_type == "theory" else "P"
+
+    label = f"{course_name} ({session_type})"
+    if room_name:
+        label += f"\n{room_name}"
+    return label
+
+
 def department_by_id(departments: List[Department], id: int) -> Department:
-    for department in departments:
-        if department.id == id:
-            return department
-
-    return None
-
-
-def courses_for_department(courses: List[Course], department_id: int) -> List[Course]:
-    return filter(lambda course: course.dep_id == department_id, courses)
+    return seq(departments).find(lambda dep: dep.id == id)
 
 
 def course_sessions(course: Course, group_id: int) -> Generator[Session, None, None]:    

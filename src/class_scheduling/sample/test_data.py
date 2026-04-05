@@ -2,12 +2,15 @@ import os
 import pdb
 import sys
 import pytest
+from functional import seq
 from src.class_scheduling.sample.data import (
     Group,
+    Session,
     load_input,
     split_students_into_groups,
+    get_eligible_rooms
 )
-from src.class_scheduling.sample.model import Settings, StudentsEnrolled
+from src.class_scheduling.sample.model import Settings, StudentsEnrolled, Classroom
 
 mock_settings = Settings(
     **{
@@ -52,6 +55,19 @@ def test_split_students_into_groups():
         Group(f"2_1_2", 1, 25, 1),
         Group(f"2_1_3", 1, 25, 1),
     ]
+
+def test_print_group():
+    from src.class_scheduling.sample.data import print_group, Group
+    from src.class_scheduling.sample.model import Department
+
+    # Arrange
+    departments = [
+        Department(id=1, name="Profesor Matematike i Računarstva"),        
+    ]
+    group = Group(id="1_1_1", dep_id=1, count=30, semester=1)
+
+    assert print_group(group, departments) == "Profesor Matematike i Računarstva, grupa B"
+    
 
 
 def test_courses_for_department():
@@ -133,6 +149,40 @@ def test_department_by_id():
     missing = department_by_id(departments, 99)
     assert missing is None
 
+def test_get_eligible_rooms_when_session_requires_computers():
+    # Arrange
+    classrooms = [
+        Classroom(**{"id": 1, "name": "Ucionica 1", "has_computers": True, "locId": 1}),
+        Classroom(**{"id": 2, "name": "Ucionica 1", "has_computers": False, "locId": 1}),
+        Classroom(**{"id": 3, "name": "Ucionica 1", "has_computers": True, "locId": 1}),
+        Classroom(**{"id": 4, "name": "Ucionica 1", "has_computers": False, "locId": 1}),        
+    ]
+
+    session = Session(id="", group_id="", department_id="", course_id="", needs_computers=True, session_type="")
+    
+    # Act
+    eligible_room_ids = get_eligible_rooms(session, classrooms)
+
+    # Assert
+    assert eligible_room_ids == [1,3]
+
+def test_get_eligible_rooms_when_session_does_not_require_computers():
+     # Arrange
+    classrooms = [
+        Classroom(**{"id": 1, "name": "Ucionica 1", "has_computers": True, "locId": 1}),
+        Classroom(**{"id": 2, "name": "Ucionica 1", "has_computers": False, "locId": 1}),
+        Classroom(**{"id": 3, "name": "Ucionica 1", "has_computers": True, "locId": 1}),
+        Classroom(**{"id": 4, "name": "Ucionica 1", "has_computers": False, "locId": 1}),        
+    ]
+
+    session = Session(id="", group_id="", department_id="", course_id="", needs_computers=False, session_type="")
+    
+    # Act
+    eligible_room_ids = get_eligible_rooms(session, classrooms)
+
+    # Assert
+    assert eligible_room_ids == [1,2,3,4]
+    
 
 def test_course_sessions():
     from src.class_scheduling.sample.data import (

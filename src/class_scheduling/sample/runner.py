@@ -2,6 +2,7 @@ import sys
 from ortools.sat.python import cp_model
 from src.class_scheduling.sample.data import load_input, GROUP_SIZE, Session
 from src.class_scheduling.sample.cp_solver import SimpleCPSolver
+from src.class_scheduling.sample.report import export_schedule_to_excel
 from src.class_scheduling.sample.model import SchedulingInput
 import os
 
@@ -69,3 +70,13 @@ if __name__ == "__main__":
         rows.append(row)
 
     print_table(rows, headers)
+
+    excel_path = os.environ.get(
+        "SCHEDULE_OUTPUT",
+        os.path.join(os.getcwd(), "schedule.xlsx"),
+    )
+    export_schedule_to_excel(solver, scheduling_input, excel_path)
+    print(f"\nExcel schedule exported to: {excel_path}", flush=True)
+
+
+
