@@ -145,7 +145,6 @@ class SimpleCPSolver:
         D = len(self.settings.working_days)
         H = len(self.working_hours)
 
-        # Compute a tight lower bound from group sizes
         # Racunamo lower bound, da bismo pomogli solveru da pre dostigne optimalnost,
         # inače nije neophodno.
         groups = defaultdict(int)
