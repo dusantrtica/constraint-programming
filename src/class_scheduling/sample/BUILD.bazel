@@ -40,3 +40,33 @@ py_binary(
     ],
     main = "runner.py",
 )
+
+py_test(
+    name = "test_mip_solver",
+    srcs = ["model.py", "data.py", "mip_solver.py", "test_mip_solver.py"],
+    deps = [
+        "@pip//pytest",
+        "@pip//pydantic",
+        "@pip//ortools",
+        "@pip//pyfunctional",
+    ],
+)
+
+py_binary(
+    name = "run_mip_solver",
+    srcs = [
+        "model.py",
+        "data.py",
+        "mip_solver.py",
+        "report.py",
+        "mip_runner.py",
+    ],
+    data = ["input.json"],
+    deps = [
+        "@pip//pydantic",
+        "@pip//ortools",
+        "@pip//openpyxl",
+        "@pip//pyfunctional",
+    ],
+    main = "mip_runner.py",
+)
