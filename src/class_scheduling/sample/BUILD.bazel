@@ -1,4 +1,4 @@
-load("@rules_python//python:defs.bzl", "py_test")
+load("@rules_python//python:defs.bzl", "py_binary", "py_test")
 
 py_test(
     name = "test_data",
@@ -69,4 +69,21 @@ py_binary(
         "@pip//pyfunctional",
     ],
     main = "mip_runner.py",
+)
+
+py_binary(
+    name = "run_benchmark",
+    srcs = [
+        "model.py",
+        "data.py",
+        "cp_solver.py",
+        "mip_solver.py",
+        "benchmark.py",
+    ],
+    deps = [
+        "@pip//pydantic",
+        "@pip//ortools",
+        "@pip//pyfunctional",
+    ],
+    main = "benchmark.py",
 )
